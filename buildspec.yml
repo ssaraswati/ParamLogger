@@ -1,0 +1,21 @@
+version: 0.1
+
+phases:
+  pre_build:
+    commands:
+      - mkdir dist
+      - rm -rf /tmp/package.zip
+  build:
+    commands:
+      - dotnet restore ParamLogger
+      - dotnet build ParamLogger
+      - dotnet publish -c Release ParamLogger
+      - zip -rj /tmp/ParamLogger.zip ParamLogger/bin/Release/netcoreapp2.0/publish/
+  post_build:
+    commands:
+      - aws cloudformation package --template-file app-sam.yaml --s3-bucket $BUILD_OUTPUT_BUCKET --output-template-file app-output_sam.yaml
+artifacts:
+  files:
+    - app-output_sam.yaml
+    - /tmp/ParamLogger.zip
+  discard-paths: yes                  

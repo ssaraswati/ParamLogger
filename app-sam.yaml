@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: 'AWS::Serverless-2016-10-31'
+Description: >-
+  AWS Serverless API that logs information contained with request
+Parameters:
+  EventTableName:
+    Type: String
+    Description: >-
+      Name of DynamoDB table used to store the information. If left blank a new
+      table will be created.
+    MinLength: '0'
+    Default: ''
+  ReadCapacity:
+    Type: Number
+    Description: Read capacity for the DynamoDB Event table.
+    Default: '1'
+    MinValue: 1
+  WriteCapacity:
+    Type: Number
+    Description: Write capacity for the DynamoDB Event table.
+    Default: '1'
+    MinValue: 1
+    
+Globals:
+  Api:
+    Cors: "'*'"
+
+Conditions:
+  CreateEventTable: !Equals 
+    - !Ref ShouldCreateTable
+    - 'true'
+  TableNameGenerated: !Equals 
+    - !Ref EventTableName
+    - ''
+
+Resources:
+  AddEvent:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: 'ParamLogger::ParamLogger.Functions::AddEventAsync'
+      Runtime: dotnetcore2.0
+      CodeUri: /tmp/ParamLogger.zip
+      Description: Function to log to dynamo
+      MemorySize: 256
+      Timeout: 30
+      Role: null
+      Policies:
+        - AWSLambdaFullAccess
+      Environment:
+        Variables:
+          EventTable: !If 
+            - CreateEventTable
+            - !Ref EventTable
+            - !Ref EventTableName
+      Events:
+        PutResource:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+
+  EventTable:
+    Type: 'AWS::DynamoDB::Table'
+    Condition: CreateEventTable
+    Properties:
+      TableName: !If 
+        - TableNameGenerated
+        - !Ref 'AWS::NoValue'
+        - !Ref EventTableName
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: !Ref ReadCapacity
+        WriteCapacityUnits: !Ref WriteCapacity
+Outputs:
+  EventTable:
+    Value: !If 
+      - CreateEventTable
+      - !Ref EventTable
+      - !Ref EventTableName
