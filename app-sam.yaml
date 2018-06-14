@@ -3,6 +3,15 @@ Transform: 'AWS::Serverless-2016-10-31'
 Description: >-
   AWS Serverless API that logs information contained with request
 Parameters:
+  ShouldCreateTable:
+    Type: String
+    Default: 'true'
+    AllowedValues:
+      - 'true'
+      - 'false'
+    Description: >-
+      If true then the DynamoDB event table will be created with the
+      CloudFormation stack.
   EventTableName:
     Type: String
     Description: >-
