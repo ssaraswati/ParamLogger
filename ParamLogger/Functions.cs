@@ -62,13 +62,23 @@ namespace ParamLogger
 
         public async Task<APIGatewayProxyResponse> AddEventAsync(APIGatewayProxyRequest request, ILambdaContext context)
         {
-            var eventToLog = new RequestEvent();
-            eventToLog.Id = Guid.NewGuid().ToString();
-            eventToLog.CreatedTimestamp = DateTime.Now;
-            eventToLog.Body = request?.Body;
-            eventToLog.QueryParameters = new Dictionary<string, string>(request?.QueryStringParameters);
-            eventToLog.PathParameters = new Dictionary<string, string>(request?.PathParameters);
-            eventToLog.Path = request?.Path;
+            var eventToLog = new RequestEvent
+            {
+                Id = Guid.NewGuid().ToString(),
+                CreatedTimestamp = DateTime.Now,
+                Body = request?.Body,
+                Path = request?.Path
+            };
+            if (request?.QueryStringParameters.Keys.Count > 0)
+            {
+                eventToLog.QueryParameters = new Dictionary<string, string>(request?.QueryStringParameters);
+            }
+
+            if (request?.PathParameters.Keys.Count > 0)
+            {
+                eventToLog.PathParameters = new Dictionary<string, string>(request?.PathParameters);
+            }
+            
 
             context.Logger.LogLine($"Saving event with id {eventToLog.Id}");
             await DDBContext.SaveAsync<RequestEvent>(eventToLog);
