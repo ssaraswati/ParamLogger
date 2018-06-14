@@ -67,7 +67,9 @@ namespace ParamLogger
                 Id = Guid.NewGuid().ToString(),
                 CreatedTimestamp = DateTime.Now,
                 Body = request?.Body,
-                Path = request?.Path
+                Path = request?.Path,
+                SourceIp = request?.RequestContext.Identity.SourceIp,
+                UserAgent = request?.RequestContext.Identity.UserAgent
             };
             if (request?.QueryStringParameters.Keys.Count > 0)
             {
@@ -78,6 +80,7 @@ namespace ParamLogger
             {
                 eventToLog.PathParameters = new Dictionary<string, string>(request?.PathParameters);
             }
+
             
 
             context.Logger.LogLine($"Saving event with id {eventToLog.Id}");
