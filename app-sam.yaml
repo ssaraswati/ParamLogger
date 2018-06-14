@@ -65,7 +65,7 @@ Resources:
         PutResource:
           Type: Api
           Properties:
-            Path: /
+            Path: /{proxy+}
             Method: GET
 
   EventTable:
