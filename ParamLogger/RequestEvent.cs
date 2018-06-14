@@ -10,8 +10,8 @@ namespace ParamLogger
         public string Id { get; set; }
         public string Path { get; set; }
         public string Body { get; set; }
-        public string QueryParameters { get; set; }
-        public string PathParameters { get; set; }
+        public IDictionary<string, string> QueryParameters { get; set; }
+        public IDictionary<string, string> PathParameters { get; set; }
         public DateTime CreatedTimestamp { get; set; }
     }
 }

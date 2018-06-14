@@ -66,8 +66,8 @@ namespace ParamLogger
             eventToLog.Id = Guid.NewGuid().ToString();
             eventToLog.CreatedTimestamp = DateTime.Now;
             eventToLog.Body = request?.Body;
-            eventToLog.QueryParameters = request?.QueryStringParameters?.ToString();
-            eventToLog.PathParameters = request?.PathParameters?.ToString();
+            eventToLog.QueryParameters = request?.QueryStringParameters;
+            eventToLog.PathParameters = request?.PathParameters;
             eventToLog.Path = request?.Path;
 
             context.Logger.LogLine($"Saving event with id {eventToLog.Id}");
