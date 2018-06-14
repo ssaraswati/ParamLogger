@@ -71,12 +71,12 @@ namespace ParamLogger
                 SourceIp = request?.RequestContext.Identity.SourceIp,
                 UserAgent = request?.RequestContext.Identity.UserAgent
             };
-            if (request?.QueryStringParameters.Keys.Count > 0)
+            if ((request?.QueryStringParameters?.Keys?.Count ?? 0) > 0)
             {
                 eventToLog.QueryParameters = new Dictionary<string, string>(request?.QueryStringParameters);
             }
 
-            if (request?.PathParameters.Keys.Count > 0)
+            if ((request?.PathParameters?.Keys?.Count ?? 0) > 0)
             {
                 eventToLog.PathParameters = new Dictionary<string, string>(request?.PathParameters);
             }
